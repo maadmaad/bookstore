@@ -1,4 +1,4 @@
-package pl.fula.bookstore.bookstore;
+package pl.fula.bookstore.bookstore.catalog.domain;
 
 public class Book {
     private Long id;
