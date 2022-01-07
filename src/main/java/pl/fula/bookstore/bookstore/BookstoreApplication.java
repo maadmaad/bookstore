@@ -15,7 +15,6 @@ public class BookstoreApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(BookstoreApplication.class, args);
-        System.out.println(context);
     }
 
     // TODO 11 - conflicts. Second approach. We don't need to add @Repository to Impl classes anymore.
