@@ -7,6 +7,7 @@ import pl.fula.bookstore.bookstore.catalog.domain.CatalogRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -21,8 +22,17 @@ public class MemoryCatalogRepositoryImpl implements CatalogRepository {
     }
 
     @Override
+    public Optional<Book> findById(Long id) {
+        return Optional.of(books.get(id));
+    }
+
+    @Override
     public void save(Book book) {
-        books.put(nextId(), book);
+        if (book.getId() == null) {
+            book.setId(nextId());
+        }
+
+        books.put(book.getId(), book);
     }
 
     private long nextId() {

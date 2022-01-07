@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.CreateBookCommand;
+import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookCommand;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 
 import java.util.List;
@@ -31,7 +32,24 @@ public class AppInit implements CommandLineRunner {
     public void run(String... args) throws Exception {
         initData();
         findByTitle();
+        findAndUpdate();
+        findByTitle();
+
 //        findByAuthor();
+    }
+
+    private void findAndUpdate() {
+        System.out.println("Updating book ...");
+        catalog.findOneByTitleAndAuthor("Pan Tadeusz", "Adam Mickiewicz")
+                .ifPresent(b -> {
+                    UpdateBookCommand command = new UpdateBookCommand(
+                        b.getId(),
+                        "Pan Tadeusz, czyli ostatni zajazd na Litwie",
+                        b.getAuthor(),
+                        b.getYear()
+                    );
+                    catalog.updateBook(command);
+                });
     }
 
     private void initData() {
@@ -47,7 +65,9 @@ public class AppInit implements CommandLineRunner {
 
     private void findByTitle() {
         List<Book> books = catalog.findByTitle(title);
-        books.stream().limit(limit).forEach(System.out::println);
+        // With limit:
+//        books.stream().limit(limit).forEach(System.out::println);
+        books.stream().forEach(System.out::println);
     }
 
     private void findByAuthor() {

@@ -1,7 +1,6 @@
 package pl.fula.bookstore.bookstore.catalog.application;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
@@ -24,12 +23,15 @@ class CatalogService implements CatalogUseCase {
 
     @Override
     public List<Book> findAll() {
-        return null;
+        return catalogRepository.findAll();
     }
 
     @Override
     public Optional<Book> findOneByTitleAndAuthor(String title, String author) {
-        return Optional.empty();
+        return catalogRepository.findAll().stream()
+                .filter(b -> b.getTitle().contains(title))
+                .filter(b -> b.getAuthor().contains(author))
+                .findFirst();
     }
 
     @Override
@@ -47,8 +49,19 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
-    public void updateBook() {
-
+    public UpdateBookResponse updateBook(UpdateBookCommand command) {
+        return catalogRepository.findById(command.getId())
+                .map(b -> {
+                    b.setTitle(command.getTitle());
+                    b.setAuthor(command.getAuthor());
+                    b.setYear(command.getYear());
+                    catalogRepository.save(b);
+                    return UpdateBookResponse.SUCCESS;
+                })
+                .orElseGet(() -> {
+                    String errorMsg = "Book not found with id: " + command.getId();
+                    return new UpdateBookResponse(false, List.of(errorMsg));
+                });
     }
 
     @Override
