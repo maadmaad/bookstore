@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class MemoryCatalogRepositoryImpl implements CatalogRepository {
+public class SchoolCatalogRepositoryImpl implements CatalogRepository {
         private final Map<Long, Book> books = new ConcurrentHashMap<>();
 
-    public MemoryCatalogRepositoryImpl() {
+    public SchoolCatalogRepositoryImpl() {
         books.put(1L, new Book(1L, "Pan Tadeusz", "Adam Mickiewicz", 1901));
         books.put(2L, new Book(2L, "Ogniem i Mieczem", "Henryk Sienkiewicz", 1902));
         books.put(3L, new Book(3L, "Chłopi", "Adam Mickiewicz", 1904));
