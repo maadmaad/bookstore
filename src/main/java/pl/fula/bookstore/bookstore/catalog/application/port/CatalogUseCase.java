@@ -22,6 +22,8 @@ public interface CatalogUseCase {
 
     public List<Book> findByTitle(String title);
 
+    public Optional<Book> findOneByTitle(String title);
+
     public List<Book> findByAuthor(String author);
 
     UpdateBookResponse updateBook(UpdateBookCommand command);
@@ -34,6 +36,10 @@ public interface CatalogUseCase {
         String author;
         Integer year;
         BigDecimal price;
+
+        public Book toBook() {
+            return new Book(title, author, year, price);
+        }
     }
 
     @Value

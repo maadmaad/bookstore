@@ -8,23 +8,33 @@ import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.Creat
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookCommand;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
+import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase;
+import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
+import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase.PlaceOrderResponse;
+import pl.fula.bookstore.bookstore.order.application.port.QueryOrderUseCase;
+import pl.fula.bookstore.bookstore.order.domain.Order;
+import pl.fula.bookstore.bookstore.order.domain.OrderItem;
+import pl.fula.bookstore.bookstore.order.domain.Recipient;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Component
 public class AppInit implements CommandLineRunner {
-    private final CatalogUseCase catalog;
+    private final CatalogUseCase catalogUseCase;
+    private final PlaceOrderUseCase placeOrderUseCase;
+    private final QueryOrderUseCase queryOrderUseCase;
     private final String title;
     private final String author;
     private final Long limit;
 
-    // TODO 12 - properties. (values in application.properties)
-    //          ':' after properties is a default value (if proprty does not exist)
-    public AppInit(CatalogUseCase catalogController, @Value("${bookstore.catalog.booktitle}") String title,
-                   @Value("${bookstore.catalog.limit:2}") Long limit,
-                   @Value("${bookstore.catalog.author}") String author) {
-        this.catalog = catalogController;
+    public AppInit(CatalogUseCase catalogUseCase, PlaceOrderUseCase placeOrderUseCase,
+                   QueryOrderUseCase queryOrderUseCase, @Value("${bookstore.catalog.booktitle}") String title,
+                   @Value("${bookstore.catalog.limit:2}") Long limit,                                                   // TODO 12 - properties. (values in application.properties)
+                   @Value("${bookstore.catalog.author}") String author) {                                               //           ':' after properties is a default value (if
+        this.catalogUseCase = catalogUseCase;                                                                           //           proprty does not exist)
+        this.placeOrderUseCase = placeOrderUseCase;
+        this.queryOrderUseCase = queryOrderUseCase;
         this.title = title;
         this.limit = limit;
         this.author = author;
@@ -38,11 +48,40 @@ public class AppInit implements CommandLineRunner {
     }
 
     private void placeOrder() {
-        // find pan tadeusz
-        // find chłopi
-        // create recipient
-        // place order command
-        // list all orders
+        System.out.println("1. ------------- Place order - START");
+        System.out.println("2. ------------- Place order - Search for 'Pan Tadeusz'");
+        Book book1 = catalogUseCase.findOneByTitle("Pan Tadeusz").orElseThrow(() -> new IllegalStateException("Cannot find a book"));
+        System.out.println("3. ------------- Place order - Search for 'Chłopi'");
+        Book book2 = catalogUseCase.findOneByTitle("Chłopi").orElseThrow(() -> new IllegalStateException("Cannot find a book"));
+        System.out.println("4. ------------- Place order - Create Recipient");
+        Recipient recipient = Recipient.builder()
+                .name("Mariusz")
+                .phone("555-444-333")
+                .street("Owocowa")
+                .city("Kraków")
+                .zipCode("30-600")
+                .email("mariusz@gmail.com")
+                .build();
+
+        System.out.println("5. ------------- Place order - Create Command");
+        PlaceOrderCommand command = PlaceOrderCommand.builder()
+                .recipient(recipient)
+                .item(new OrderItem(book1, 11))
+                .item(new OrderItem(book2, 22))
+                .build();
+
+        System.out.println("6. ------------- Place order - placeOrder()");
+        PlaceOrderResponse response = placeOrderUseCase.placeOrder(command);
+        System.out.println("7. ------------- Place order - created order with id: " + response.getOrderId());
+
+        System.out.println("8. ------------- Place order - findAll orders");
+        List<Order> orders = queryOrderUseCase.findAll();
+        System.out.println("9. ------------- Place order - print all orders:");
+        orders.forEach(System.out::println);
+        System.out.println("10. ------------- Place order - print orders total prices:");
+        queryOrderUseCase.findAll().forEach(order -> {
+            System.out.println("Order id: " + order.getId() + ", TOTAL PRICE: " + order.totalPrice());
+        });
     }
 
     private void searchCatalog() {
@@ -53,36 +92,36 @@ public class AppInit implements CommandLineRunner {
 
     private void findAndUpdate() {
         System.out.println("Updating book ...");
-        catalog.findOneByTitleAndAuthor("Pan Tadeusz", "Adam Mickiewicz")
+        catalogUseCase.findOneByTitleAndAuthor("Pan Tadeusz", "Adam Mickiewicz")
                 .ifPresent(b -> {
                     UpdateBookCommand command = UpdateBookCommand.builder()
-                        .id(b.getId())
-                        .newTitle("Pan Tadeusz, czyli ostatni zajazd na Litwie")
-                        .build();
-                    UpdateBookResponse response = catalog.updateBook(command);
+                            .id(b.getId())
+                            .newTitle("Pan Tadeusz, czyli ostatni zajazd na Litwie")
+                            .build();
+                    UpdateBookResponse response = catalogUseCase.updateBook(command);
                     System.out.println("Updated book success: " + response.isSuccess());
                 });
     }
 
     private void initData() {
-        catalog.addBook(new CreateBookCommand("Harry Potter i Komnata Tajemnic", "JK Rowling", 1998, BigDecimal.valueOf(10.0)));
-        catalog.addBook(new CreateBookCommand("Władca Pierścieni: Dwie Wieże", "JPR Tolkien", 1954, BigDecimal.valueOf(10.0)));
-        catalog.addBook(new CreateBookCommand("Mężczyźni, którzy nienawidzą kobiet", "Stieg Larsson", 2005, BigDecimal.valueOf(10.0)));
-        catalog.addBook(new CreateBookCommand("Sezon Burz", "Andrzej Sapkowski", 2013, BigDecimal.valueOf(10.0)));
-        catalog.addBook(new CreateBookCommand("Pan Tadeusz", "Adam Mickiewicz", 1901, BigDecimal.valueOf(10.0)));
-        catalog.addBook(new CreateBookCommand("Ogniem i Mieczem", "Henryk Sienkiewicz", 1902, BigDecimal.valueOf(10.0)));
-        catalog.addBook(new CreateBookCommand("Chłopi", "Adam Mickiewicz", 1904, BigDecimal.valueOf(10.0)));
-        catalog.addBook(new CreateBookCommand("Pan Wołodyjowski", "Henryk Sienkiewicz", 1905, BigDecimal.valueOf(10.0)));
+        catalogUseCase.addBook(new CreateBookCommand("Harry Potter i Komnata Tajemnic", "JK Rowling", 1998, BigDecimal.valueOf(19.99)));
+        catalogUseCase.addBook(new CreateBookCommand("Władca Pierścieni: Dwie Wieże", "JPR Tolkien", 1954, BigDecimal.valueOf(10.0)));
+        catalogUseCase.addBook(new CreateBookCommand("Mężczyźni, którzy nienawidzą kobiet", "Stieg Larsson", 2005, BigDecimal.valueOf(10.0)));
+        catalogUseCase.addBook(new CreateBookCommand("Sezon Burz", "Andrzej Sapkowski", 2013, BigDecimal.valueOf(10.0)));
+        catalogUseCase.addBook(new CreateBookCommand("Pan Tadeusz", "Adam Mickiewicz", 1901, BigDecimal.valueOf(10.0)));
+        catalogUseCase.addBook(new CreateBookCommand("Ogniem i Mieczem", "Henryk Sienkiewicz", 1902, BigDecimal.valueOf(10.0)));
+        catalogUseCase.addBook(new CreateBookCommand("Chłopi", "Adam Mickiewicz", 1904, BigDecimal.valueOf(10.0)));
+        catalogUseCase.addBook(new CreateBookCommand("Pan Wołodyjowski", "Henryk Sienkiewicz", 1905, BigDecimal.valueOf(10.0)));
     }
 
     private void findByTitle() {
-        List<Book> books = catalog.findByTitle(title);
+        List<Book> books = catalogUseCase.findByTitle(title);
         // With limit:
 //        books.stream().limit(limit).forEach(System.out::println);
         books.stream().forEach(System.out::println);
     }
 
     private void findByAuthor() {
-        catalog.findByAuthor(author).stream().limit(limit).forEach(System.out::println);
+        catalogUseCase.findByAuthor(author).stream().limit(limit).forEach(System.out::println);
     }
 }
