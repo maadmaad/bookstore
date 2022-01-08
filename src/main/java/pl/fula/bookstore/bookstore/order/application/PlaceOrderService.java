@@ -8,7 +8,7 @@ import pl.fula.bookstore.bookstore.order.domain.OrderRepository;
 
 @Service
 @RequiredArgsConstructor
-public class PlaceOrderService implements PlaceOrderUseCase {
+class PlaceOrderService implements PlaceOrderUseCase {
     private final OrderRepository orderRepository;
 
     @Override
