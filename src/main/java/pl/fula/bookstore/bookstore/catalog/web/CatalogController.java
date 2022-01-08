@@ -1,6 +1,8 @@
 package pl.fula.bookstore.bookstore.catalog.web;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +24,9 @@ public class CatalogController {
     }
 
     @GetMapping("/{id}")
-    public Book getById(@PathVariable Long id) {
-        return catalog.findById(id).orElse(null);
+    public ResponseEntity<Book> getById(@PathVariable Long id) {
+        return catalog.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
