@@ -1,16 +1,24 @@
 package pl.fula.bookstore.bookstore.catalog.web;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
+import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.CreateBookCommand;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 
+import java.math.BigDecimal;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,5 +51,25 @@ public class CatalogController {
         return catalog.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> addBook(@RequestBody RestCreateBookCommand command) {
+        Book book = catalog.addBook(command.toCreateBookCommand());
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
+        return ResponseEntity.created(uri).build();                                                                     // TODO 4.6 - return location of created Book in header
+    }
+
+    @Data
+    private static class RestCreateBookCommand {
+        private String title;
+        private String author;
+        private Integer year;
+        private BigDecimal price;
+
+        CreateBookCommand toCreateBookCommand() {
+            return new CreateBookCommand(title, author, year, price);
+        }
     }
 }

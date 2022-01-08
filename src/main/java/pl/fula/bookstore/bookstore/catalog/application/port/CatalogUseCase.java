@@ -14,7 +14,7 @@ import static java.util.Collections.emptyList;
 
 public interface CatalogUseCase {
 
-    void addBook(CreateBookCommand command);
+    Book addBook(CreateBookCommand command);
 
     Optional<Book> findById(Long id);
 
