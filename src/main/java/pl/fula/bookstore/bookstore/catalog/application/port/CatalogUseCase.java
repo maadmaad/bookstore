@@ -1,5 +1,6 @@
 package pl.fula.bookstore.bookstore.catalog.application.port;
 
+import lombok.Builder;
 import lombok.Value;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 
@@ -26,7 +27,7 @@ public interface CatalogUseCase {
 
     UpdateBookResponse updateBook(UpdateBookCommand command);
 
-    void removeBook(Long id);
+    void removeBookById(Long id);
 
     @Value
     class CreateBookCommand {
@@ -36,11 +37,25 @@ public interface CatalogUseCase {
     }
 
     @Value
+    @Builder
     class UpdateBookCommand {
         Long id;
-        String title;
-        String author;
-        Integer year;
+        String newTitle;
+        String newAuthor;
+        Integer newYear;
+
+        public Book updateFields(Book updatedBook) {
+            if (newTitle != null) {
+                updatedBook.setTitle(newTitle);
+            }
+            if (newAuthor != null) {
+                updatedBook.setAuthor(newAuthor);
+            }
+            if (newYear != null) {
+                updatedBook.setYear(newYear);
+            }
+            return updatedBook;
+        }
     }
 
     @Value

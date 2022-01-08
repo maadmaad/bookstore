@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.CreateBookCommand;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookCommand;
+import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 
 import java.util.List;
@@ -42,13 +43,12 @@ public class AppInit implements CommandLineRunner {
         System.out.println("Updating book ...");
         catalog.findOneByTitleAndAuthor("Pan Tadeusz", "Adam Mickiewicz")
                 .ifPresent(b -> {
-                    UpdateBookCommand command = new UpdateBookCommand(
-                        b.getId(),
-                        "Pan Tadeusz, czyli ostatni zajazd na Litwie",
-                        b.getAuthor(),
-                        b.getYear()
-                    );
-                    catalog.updateBook(command);
+                    UpdateBookCommand command = UpdateBookCommand.builder()
+                        .id(b.getId())
+                        .newTitle("Pan Tadeusz, czyli ostatni zajazd na Litwie")
+                        .build();
+                    UpdateBookResponse response = catalog.updateBook(command);
+                    System.out.println("Updated book success: " + response.isSuccess());
                 });
     }
 

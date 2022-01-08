@@ -51,11 +51,9 @@ class CatalogService implements CatalogUseCase {
     @Override
     public UpdateBookResponse updateBook(UpdateBookCommand command) {
         return catalogRepository.findById(command.getId())
-                .map(b -> {
-                    b.setTitle(command.getTitle());
-                    b.setAuthor(command.getAuthor());
-                    b.setYear(command.getYear());
-                    catalogRepository.save(b);
+                .map(book -> {
+                    Book updatedBook = command.updateFields(book);
+                    catalogRepository.save(updatedBook);
                     return UpdateBookResponse.SUCCESS;
                 })
                 .orElseGet(() -> {
@@ -65,7 +63,7 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
-    public void removeBook(Long id) {
-
+    public void removeBookById(Long id) {
+        catalogRepository.removeById(id);
     }
 }

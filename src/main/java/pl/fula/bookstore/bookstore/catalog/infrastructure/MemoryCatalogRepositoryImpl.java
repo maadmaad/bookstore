@@ -35,6 +35,11 @@ public class MemoryCatalogRepositoryImpl implements CatalogRepository {
         books.put(book.getId(), book);
     }
 
+    @Override
+    public void removeById(Long id) {
+        books.remove(id);
+    }
+
     private long nextId() {
         return ID_NEXT_VALUE.incrementAndGet();
     }
