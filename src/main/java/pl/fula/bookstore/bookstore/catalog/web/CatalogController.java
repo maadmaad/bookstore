@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,10 @@ import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.CreateBookCommand;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
@@ -56,7 +61,7 @@ public class CatalogController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addBook(@RequestBody RestCreateBookCommand command) {
+    public ResponseEntity<Void> addBook(@Valid @RequestBody RestCreateBookCommand command) {
         Book book = catalog.addBook(command.toCreateBookCommand());
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
         return ResponseEntity.created(uri).build();                                                                     // TODO 4.6 - return location of created Book in header
@@ -70,9 +75,17 @@ public class CatalogController {
 
     @Data
     private static class RestCreateBookCommand {
+        @NotBlank
         private String title;
+
+        @NotBlank
         private String author;
+
+        @NotNull
         private Integer year;
+
+        @NotNull
+        @DecimalMin("0.01")
         private BigDecimal price;
 
         CreateBookCommand toCreateBookCommand() {
