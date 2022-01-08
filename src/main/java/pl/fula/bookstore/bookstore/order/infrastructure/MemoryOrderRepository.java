@@ -3,6 +3,7 @@ package pl.fula.bookstore.bookstore.order.infrastructure;
 import org.springframework.stereotype.Repository;
 import pl.fula.bookstore.bookstore.order.domain.Order;
 import pl.fula.bookstore.bookstore.order.domain.OrderRepository;
+import pl.fula.bookstore.bookstore.order.domain.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

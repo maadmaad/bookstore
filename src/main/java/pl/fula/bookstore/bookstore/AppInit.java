@@ -33,11 +33,22 @@ public class AppInit implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         initData();
+        searchCatalog();
+        placeOrder();
+    }
+
+    private void placeOrder() {
+        // find pan tadeusz
+        // find chłopi
+        // create recipient
+        // place order command
+        // list all orders
+    }
+
+    private void searchCatalog() {
         findByTitle();
         findAndUpdate();
         findByTitle();
-
-//        findByAuthor();
     }
 
     private void findAndUpdate() {
