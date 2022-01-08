@@ -12,9 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class MemoryCatalogRepositoryImpl implements CatalogRepository {
+public class MemoryCatalogRepository implements CatalogRepository {
     private final Map<Long, Book> books = new ConcurrentHashMap<>();
-    private final AtomicLong ID_NEXT_VALUE = new AtomicLong(0L);
+    private final AtomicLong NEXT_ID = new AtomicLong(0L);
 
     @Override
     public List<Book> findAll() {
@@ -41,6 +41,6 @@ public class MemoryCatalogRepositoryImpl implements CatalogRepository {
     }
 
     private long nextId() {
-        return ID_NEXT_VALUE.incrementAndGet();
+        return NEXT_ID.incrementAndGet();
     }
 }

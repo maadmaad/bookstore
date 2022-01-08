@@ -9,6 +9,7 @@ import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.Updat
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
@@ -53,14 +54,14 @@ public class AppInit implements CommandLineRunner {
     }
 
     private void initData() {
-        catalog.addBook(new CreateBookCommand("Harry Potter i Komnata Tajemnic", "JK Rowling", 1998));
-        catalog.addBook(new CreateBookCommand("Władca Pierścieni: Dwie Wieże", "JPR Tolkien", 1954));
-        catalog.addBook(new CreateBookCommand("Mężczyźni, którzy nienawidzą kobiet", "Stieg Larsson", 2005));
-        catalog.addBook(new CreateBookCommand("Sezon Burz", "Andrzej Sapkowski", 2013));
-        catalog.addBook(new CreateBookCommand("Pan Tadeusz", "Adam Mickiewicz", 1901));
-        catalog.addBook(new CreateBookCommand("Ogniem i Mieczem", "Henryk Sienkiewicz", 1902));
-        catalog.addBook(new CreateBookCommand("Chłopi", "Adam Mickiewicz", 1904));
-        catalog.addBook(new CreateBookCommand("Pan Wołodyjowski", "Henryk Sienkiewicz", 1905));
+        catalog.addBook(new CreateBookCommand("Harry Potter i Komnata Tajemnic", "JK Rowling", 1998, BigDecimal.valueOf(10.0)));
+        catalog.addBook(new CreateBookCommand("Władca Pierścieni: Dwie Wieże", "JPR Tolkien", 1954, BigDecimal.valueOf(10.0)));
+        catalog.addBook(new CreateBookCommand("Mężczyźni, którzy nienawidzą kobiet", "Stieg Larsson", 2005, BigDecimal.valueOf(10.0)));
+        catalog.addBook(new CreateBookCommand("Sezon Burz", "Andrzej Sapkowski", 2013, BigDecimal.valueOf(10.0)));
+        catalog.addBook(new CreateBookCommand("Pan Tadeusz", "Adam Mickiewicz", 1901, BigDecimal.valueOf(10.0)));
+        catalog.addBook(new CreateBookCommand("Ogniem i Mieczem", "Henryk Sienkiewicz", 1902, BigDecimal.valueOf(10.0)));
+        catalog.addBook(new CreateBookCommand("Chłopi", "Adam Mickiewicz", 1904, BigDecimal.valueOf(10.0)));
+        catalog.addBook(new CreateBookCommand("Pan Wołodyjowski", "Henryk Sienkiewicz", 1905, BigDecimal.valueOf(10.0)));
     }
 
     private void findByTitle() {
