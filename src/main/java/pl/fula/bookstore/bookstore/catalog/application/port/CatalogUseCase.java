@@ -16,6 +16,8 @@ public interface CatalogUseCase {
 
     void addBook(CreateBookCommand command);
 
+    Optional<Book> findById(Long id);
+
     List<Book> findAll();
 
     Optional<Book> findOneByTitleAndAuthor(String title, String author);

@@ -23,7 +23,10 @@ public class MemoryCatalogRepository implements CatalogRepository {
 
     @Override
     public Optional<Book> findById(Long id) {
-        return Optional.of(books.get(id));
+        if (books.containsKey(id)) {
+            return Optional.of(books.get(id));
+        }
+        return Optional.empty();
     }
 
     @Override
