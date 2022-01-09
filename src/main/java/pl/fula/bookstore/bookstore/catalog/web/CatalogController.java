@@ -25,14 +25,12 @@ import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.Updat
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 import pl.fula.bookstore.bookstore.common.validation.NullOrNotBlank;
-import pl.fula.bookstore.bookstore.common.validation.ValidationGroups;
 import pl.fula.bookstore.bookstore.common.validation.ValidationGroups.CreateBookValidationGroup;
 import pl.fula.bookstore.bookstore.common.validation.ValidationGroups.UpdateBookValidationGroup;
+import pl.fula.bookstore.bookstore.uploads.application.port.UploadUseCase;
 
-import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -45,6 +43,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CatalogController {
     private final CatalogUseCase catalog;
+    private final UploadUseCase uploadUseCase;
 
 //    @GetMapping(params = {"title"})                                                                                   // TODO 5.5 - Request Params. Specified "title" param is now mandatory for this endpoint
 //    public List<Book> getAllFiltered1(@RequestParam String title) {
@@ -106,6 +105,12 @@ public class CatalogController {
                 file.getContentType(),
                 file.getOriginalFilename()
         ));
+    }
+
+    @DeleteMapping("/{id}/cover")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeBookCover(@PathVariable Long id) {
+        catalog.removeBookCover(id);
     }
 
     @DeleteMapping("/{id}")

@@ -2,15 +2,12 @@ package pl.fula.bookstore.bookstore.catalog.application.port;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 
@@ -37,6 +34,8 @@ public interface CatalogUseCase {
     void updateBookCover(UpdateBookCoverCommand command);
 
     void removeBookById(Long id);
+
+    void removeBookCover(Long id);
 
     @Value
     class CreateBookCommand {
