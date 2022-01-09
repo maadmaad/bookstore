@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,11 +19,18 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.CreateBookCommand;
+import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookCommand;
+import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
+import pl.fula.bookstore.bookstore.common.validation.NullOrNotBlank;
+import pl.fula.bookstore.bookstore.common.validation.ValidationGroups;
+import pl.fula.bookstore.bookstore.common.validation.ValidationGroups.CreateBookValidationGroup;
+import pl.fula.bookstore.bookstore.common.validation.ValidationGroups.UpdateBookValidationGroup;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -66,10 +75,21 @@ public class CatalogController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addBook(@Valid @RequestBody RestCreateBookCommand command) {
+    public ResponseEntity<Void> addBook_Validated(@Validated({CreateBookValidationGroup.class}) @RequestBody RestBookCommand command) {
         Book book = catalog.addBook(command.toCreateBookCommand());
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
         return ResponseEntity.created(uri).build();                                                                     // TODO 4.6 - return location of created Book in header
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateBook(@PathVariable Long id, @Validated({UpdateBookValidationGroup.class}) @RequestBody RestBookCommand command) {
+        UpdateBookResponse response = catalog.updateBook(command.toUpdateBookCommand(id));
+
+        if (!response.isSuccess()) {
+            String message = String.join(", ", response.getErrors());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -79,22 +99,61 @@ public class CatalogController {
     }
 
     @Data
-    private static class RestCreateBookCommand {
-        @NotBlank(message = "Please provide a title")
+    private static class RestBookCommand {
+        @NotBlank(groups = CreateBookValidationGroup.class, message = "Please provide a title")
+        @NullOrNotBlank(groups = UpdateBookValidationGroup.class)
         private String title;
 
-        @NotBlank
+        @NotBlank(groups = CreateBookValidationGroup.class)
+        @NullOrNotBlank(groups = UpdateBookValidationGroup.class)
         private String author;
 
-        @NotNull
+        @NotNull(groups = CreateBookValidationGroup.class)
         private Integer year;
 
-        @NotNull
-        @DecimalMin("0.01")
+        @NotNull(groups = CreateBookValidationGroup.class)
+        @DecimalMin(groups = {CreateBookValidationGroup.class, UpdateBookValidationGroup.class}, value = "0.01")
         private BigDecimal price;
 
         CreateBookCommand toCreateBookCommand() {
             return new CreateBookCommand(title, author, year, price);
         }
+
+        UpdateBookCommand toUpdateBookCommand(Long id) {
+            return new UpdateBookCommand(id, title, author, year, price);
+        }
     }
+
+    // TODO 4.10 - @Valid, @Validated
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public ResponseEntity<Void> addBook_Valid(@Valid @RequestBody RestBookCommand_Valid command) {
+//        Book book = catalog.addBook(command.toCreateBookCommand());
+//        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
+//        return ResponseEntity.created(uri).build();                                                                     // TODO 4.6 - return location of created Book in header
+//    }
+//
+//    @Data
+//    private static class RestBookCommand_Valid {
+//        @NotBlank(message = "Please provide a title")
+//        private String title;
+//
+//        @NotBlank
+//        private String author;
+//
+//        @NotNull
+//        private Integer year;
+//
+//        @NotNull
+//        @DecimalMin("0.01")
+//        private BigDecimal price;
+//
+//        CreateBookCommand toCreateBookCommand() {
+//            return new CreateBookCommand(title, author, year, price);
+//        }
+//
+//        UpdateBookCommand toUpdateBookCommand(Long id) {
+//            return new UpdateBookCommand(id, title, author, year, price);
+//        }
+//    }
 }

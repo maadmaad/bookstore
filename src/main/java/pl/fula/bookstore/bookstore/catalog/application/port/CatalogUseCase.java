@@ -1,6 +1,8 @@
 package pl.fula.bookstore.bookstore.catalog.application.port;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 
@@ -48,6 +50,7 @@ public interface CatalogUseCase {
 
     @Value
     @Builder
+    @AllArgsConstructor
     class UpdateBookCommand {
         Long id;
         String newTitle;
