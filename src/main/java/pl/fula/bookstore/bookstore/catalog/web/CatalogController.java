@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.CreateBookCommand;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookCommand;
+import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookCoverCommand;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 import pl.fula.bookstore.bookstore.common.validation.NullOrNotBlank;
@@ -32,6 +34,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
@@ -90,6 +93,19 @@ public class CatalogController {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
+    }
+
+    @PutMapping("/{id}/cover")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void addBookCover(@PathVariable Long id, @RequestParam("coverFile") MultipartFile file) throws IOException { // TODO nazwa 'coverFile' musi być używa przy tworzeniu zapytania PUT - w body wybieramy form-data i kluczem ma być 'coverFile' a wartością plik
+        System.out.println("Got file: " + file.getName());
+
+        catalog.updateBookCover(new UpdateBookCoverCommand(
+                id,
+                file.getBytes(),
+                file.getContentType(),
+                file.getOriginalFilename()
+        ));
     }
 
     @DeleteMapping("/{id}")
