@@ -3,6 +3,7 @@ package pl.fula.bookstore.bookstore.catalog.web;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -94,7 +95,7 @@ public class CatalogController {
         }
     }
 
-    @PutMapping("/{id}/cover")
+    @PutMapping(value = "/{id}/cover", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void addBookCover(@PathVariable Long id, @RequestParam("coverFile") MultipartFile file) throws IOException { // TODO nazwa 'coverFile' musi być używa przy tworzeniu zapytania PUT - w body wybieramy form-data i kluczem ma być 'coverFile' a wartością plik
         System.out.println("Got file: " + file.getName());
