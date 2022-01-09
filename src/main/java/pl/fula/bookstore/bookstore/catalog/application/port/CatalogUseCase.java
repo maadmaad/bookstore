@@ -80,7 +80,6 @@ public interface CatalogUseCase {
     @Value
     class UpdateBookResponse {
         public static UpdateBookResponse SUCCESS = new UpdateBookResponse(true, emptyList());
-
         boolean success;
         List<String> errors;
     }
