@@ -11,7 +11,7 @@ import pl.fula.bookstore.bookstore.catalog.domain.Book;
 import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase;
 import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
 import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase.PlaceOrderResponse;
-import pl.fula.bookstore.bookstore.order.application.port.QueryOrderUseCase;
+import pl.fula.bookstore.bookstore.order.application.port.OrderUseCase;
 import pl.fula.bookstore.bookstore.order.domain.Order;
 import pl.fula.bookstore.bookstore.order.domain.OrderItem;
 import pl.fula.bookstore.bookstore.order.domain.Recipient;
@@ -23,18 +23,18 @@ import java.util.List;
 public class AppInit implements CommandLineRunner {
     private final CatalogUseCase catalogUseCase;
     private final PlaceOrderUseCase placeOrderUseCase;
-    private final QueryOrderUseCase queryOrderUseCase;
+    private final OrderUseCase orderUseCase;
     private final String title;
     private final String author;
     private final Long limit;
 
     public AppInit(CatalogUseCase catalogUseCase, PlaceOrderUseCase placeOrderUseCase,
-                   QueryOrderUseCase queryOrderUseCase, @Value("${bookstore.catalog.booktitle}") String title,
+                   OrderUseCase orderUseCase, @Value("${bookstore.catalog.booktitle}") String title,
                    @Value("${bookstore.catalog.limit:2}") Long limit,                                                   // TODO 12 - properties. (values in application.properties)
                    @Value("${bookstore.catalog.author}") String author) {                                               //           ':' after properties is a default value (if
         this.catalogUseCase = catalogUseCase;                                                                           //           proprty does not exist)
         this.placeOrderUseCase = placeOrderUseCase;
-        this.queryOrderUseCase = queryOrderUseCase;
+        this.orderUseCase = orderUseCase;
         this.title = title;
         this.limit = limit;
         this.author = author;
@@ -44,6 +44,7 @@ public class AppInit implements CommandLineRunner {
     public void run(String... args) throws Exception {
         initData();
         searchCatalog();
+        placeOrder();
         placeOrder();
     }
 
@@ -66,8 +67,8 @@ public class AppInit implements CommandLineRunner {
         System.out.println("5. ------------- Place order - Create Command");
         PlaceOrderCommand command = PlaceOrderCommand.builder()
                 .recipient(recipient)
-                .item(new OrderItem(book1, 11))
-                .item(new OrderItem(book2, 22))
+                .item(new OrderItem(1L, 11))
+                .item(new OrderItem(2L, 22))
                 .build();
 
         System.out.println("6. ------------- Place order - placeOrder()");
@@ -75,13 +76,13 @@ public class AppInit implements CommandLineRunner {
         System.out.println("7. ------------- Place order - created order with id: " + response.getOrderId());
 
         System.out.println("8. ------------- Place order - findAll orders");
-        List<Order> orders = queryOrderUseCase.findAll();
+        List<Order> orders = orderUseCase.findAll();
         System.out.println("9. ------------- Place order - print all orders:");
         orders.forEach(System.out::println);
         System.out.println("10. ------------- Place order - print orders total prices:");
-        queryOrderUseCase.findAll().forEach(order -> {
-            System.out.println("Order id: " + order.getId() + ", TOTAL PRICE: " + order.totalPrice());
-        });
+//        orderUseCase.findAll().forEach(order -> {
+//            System.out.println("Order id: " + order.getId() + ", TOTAL PRICE: " + order.totalPrice());
+//        });
     }
 
     private void searchCatalog() {

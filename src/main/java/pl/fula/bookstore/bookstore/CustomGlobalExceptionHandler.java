@@ -7,6 +7,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import pl.fula.bookstore.bookstore.common.validation.BookstoreValidationException;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -16,6 +17,11 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class CustomGlobalExceptionHandler {
+
+    @ExceptionHandler(BookstoreValidationException.class)
+    public ResponseEntity<String> handleConflict(BookstoreValidationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
@@ -38,16 +44,8 @@ public class CustomGlobalExceptionHandler {
         return new ResponseEntity<>(body, status);
     }
 
-    @ExceptionHandler({TypeMismatchException.class, HttpMessageNotReadableException.class})
-    public ResponseEntity<Object> handleOtherExceptions(Exception ex) {
-        if (ex instanceof TypeMismatchException) {
-            // some logic
-        } else if (ex instanceof HttpMessageNotReadableException) {
-            // some logic
-        } else {
-            // some logic
-        }
-
-        return null;
-    }
+//    @ExceptionHandler({Exception.class})
+//    public ResponseEntity<String> handleOtherExceptions(Exception ex) {
+//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+//    }
 }
