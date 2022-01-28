@@ -3,17 +3,14 @@ package pl.fula.bookstore.bookstore.order.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase;
-import pl.fula.bookstore.bookstore.order.domain.Order;
-import pl.fula.bookstore.bookstore.order.domain.OrderRepository;
-import pl.fula.bookstore.bookstore.order.domain.OrderStatus;
+import pl.fula.bookstore.bookstore.order.db.OrderJpaRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 class ManipulateOrderService implements ManipulateOrderUseCase {
-    private final OrderRepository orderRepository;
+    private final OrderJpaRepository orderRepository;
 
     @Override
     public ManipulateOrderResponse changeOrderStatus(UpdateOrderStatusCommand command) {

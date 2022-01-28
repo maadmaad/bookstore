@@ -49,12 +49,8 @@ public class AppInit implements CommandLineRunner {
     }
 
     private void placeOrder() {
-        System.out.println("1. ------------- Place order - START");
-        System.out.println("2. ------------- Place order - Search for 'Pan Tadeusz'");
         Book book1 = catalogUseCase.findOneByTitle("Pan Tadeusz").orElseThrow(() -> new IllegalStateException("Cannot find a book"));
-        System.out.println("3. ------------- Place order - Search for 'Chłopi'");
         Book book2 = catalogUseCase.findOneByTitle("Chłopi").orElseThrow(() -> new IllegalStateException("Cannot find a book"));
-        System.out.println("4. ------------- Place order - Create Recipient");
         Recipient recipient = Recipient.builder()
                 .name("Mariusz")
                 .phone("555-444-333")
@@ -64,25 +60,15 @@ public class AppInit implements CommandLineRunner {
                 .email("mariusz@gmail.com")
                 .build();
 
-        System.out.println("5. ------------- Place order - Create Command");
         PlaceOrderCommand command = PlaceOrderCommand.builder()
                 .recipient(recipient)
                 .item(new OrderItem(1L, 11))
                 .item(new OrderItem(2L, 22))
                 .build();
 
-        System.out.println("6. ------------- Place order - placeOrder()");
         PlaceOrderResponse response = placeOrderUseCase.placeOrder(command);
-        System.out.println("7. ------------- Place order - created order with id: " + response.getOrderId());
 
-        System.out.println("8. ------------- Place order - findAll orders");
         List<Order> orders = orderUseCase.findAll();
-        System.out.println("9. ------------- Place order - print all orders:");
-        orders.forEach(System.out::println);
-        System.out.println("10. ------------- Place order - print orders total prices:");
-//        orderUseCase.findAll().forEach(order -> {
-//            System.out.println("Order id: " + order.getId() + ", TOTAL PRICE: " + order.totalPrice());
-//        });
     }
 
     private void searchCatalog() {
@@ -92,7 +78,6 @@ public class AppInit implements CommandLineRunner {
     }
 
     private void findAndUpdate() {
-        System.out.println("Updating book ...");
         catalogUseCase.findOneByTitleAndAuthor("Pan Tadeusz", "Adam Mickiewicz")
                 .ifPresent(b -> {
                     UpdateBookCommand command = UpdateBookCommand.builder()
@@ -100,7 +85,6 @@ public class AppInit implements CommandLineRunner {
                             .newTitle("Pan Tadeusz, czyli ostatni zajazd na Litwie")
                             .build();
                     UpdateBookResponse response = catalogUseCase.updateBook(command);
-                    System.out.println("Updated book success: " + response.isSuccess());
                 });
     }
 
@@ -118,11 +102,5 @@ public class AppInit implements CommandLineRunner {
     private void findByTitle() {
         List<Book> books = catalogUseCase.findByTitle(title);
         // With limit:
-//        books.stream().limit(limit).forEach(System.out::println);
-        books.stream().forEach(System.out::println);
-    }
-
-    private void findByAuthor() {
-        catalogUseCase.findByAuthor(author).stream().limit(limit).forEach(System.out::println);
     }
 }
