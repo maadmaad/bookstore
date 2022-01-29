@@ -1,5 +1,10 @@
 DROP TABLE IF exists order_item;
 DROP TABLE IF exists orders;
-DROP TABLE IF exists book;
 DROP TABLE IF exists recipient;
 DROP TABLE IF exists upload;
+DROP TABLE IF exists author_books;
+DROP TABLE IF exists book_authors;
+DROP TABLE IF exists book_author;
+DROP TABLE IF exists author_book;
+DROP TABLE IF exists author;
+DROP TABLE IF exists book;

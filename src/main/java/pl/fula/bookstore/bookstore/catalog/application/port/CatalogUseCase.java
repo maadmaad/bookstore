@@ -45,7 +45,8 @@ public interface CatalogUseCase {
         BigDecimal price;
 
         public Book toBook() {
-            return new Book(title, author, year, price);
+            // todo efg - what about authors?
+            return new Book(title, year, price);
         }
     }
 
@@ -63,9 +64,10 @@ public interface CatalogUseCase {
             if (newTitle != null) {
                 updatedBook.setTitle(newTitle);
             }
-            if (newAuthor != null) {
-                updatedBook.setAuthor(newAuthor);
-            }
+            // todo efg
+//            if (newAuthor != null) {
+//                updatedBook.setAuthor(newAuthor);
+//            }
             if (newYear != null) {
                 updatedBook.setYear(newYear);
             }

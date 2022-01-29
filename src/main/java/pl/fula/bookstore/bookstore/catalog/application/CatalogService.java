@@ -39,7 +39,8 @@ class CatalogService implements CatalogUseCase {
     public List<Book> findByTitleAndAuthor(String title, String author) {
         return bookRepository.findAll().stream()
                 .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
-                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                // todo efg
+//                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -47,7 +48,8 @@ class CatalogService implements CatalogUseCase {
     public Optional<Book> findOneByTitleAndAuthor(String title, String author) {
         return bookRepository.findAll().stream()
                 .filter(b -> b.getTitle().contains(title))
-                .filter(b -> b.getAuthor().contains(author))
+                // todo efg
+//                .filter(b -> b.getAuthor().contains(author))
                 .findFirst();
     }
 
@@ -68,7 +70,8 @@ class CatalogService implements CatalogUseCase {
     @Override
     public List<Book> findByAuthor(String author) {
         return bookRepository.findAll().stream()
-                .filter(b -> b.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                // todo efg
+//                .filter(b -> b.getAuthor().toLowerCase().contains(author.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
