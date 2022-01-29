@@ -1,8 +1,13 @@
 package pl.fula.bookstore.bookstore.catalog.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,9 +20,10 @@ import javax.persistence.ManyToMany;
 import java.math.BigDecimal;
 import java.util.Set;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString(exclude = "authors")
 @Entity
 public class Book {
     @Id
@@ -29,6 +35,7 @@ public class Book {
     private BigDecimal price;
     private Long coverId;
 
+    @JsonIgnoreProperties("books")
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "author_book",

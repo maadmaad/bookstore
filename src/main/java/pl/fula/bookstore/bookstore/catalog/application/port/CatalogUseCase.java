@@ -8,6 +8,7 @@ import pl.fula.bookstore.bookstore.catalog.domain.Book;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Collections.emptyList;
 
@@ -40,14 +41,9 @@ public interface CatalogUseCase {
     @Value
     class CreateBookCommand {
         String title;
-        String author;
+        Set<Long> authorIds;
         Integer year;
         BigDecimal price;
-
-        public Book toBook() {
-            // todo efg - what about authors?
-            return new Book(title, year, price);
-        }
     }
 
     @Value
@@ -56,7 +52,7 @@ public interface CatalogUseCase {
     class UpdateBookCommand {
         Long id;
         String newTitle;
-        String newAuthor;
+        Set<Long> newAuthorIds;
         Integer newYear;
         BigDecimal newPrice;
 

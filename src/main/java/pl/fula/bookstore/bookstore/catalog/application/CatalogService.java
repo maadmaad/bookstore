@@ -3,7 +3,9 @@ package pl.fula.bookstore.bookstore.catalog.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
+import pl.fula.bookstore.bookstore.catalog.db.AuthorJpaRepository;
 import pl.fula.bookstore.bookstore.catalog.db.BookJpaRepository;
+import pl.fula.bookstore.bookstore.catalog.domain.Author;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 import pl.fula.bookstore.bookstore.uploads.application.port.UploadUseCase;
 import pl.fula.bookstore.bookstore.uploads.application.port.UploadUseCase.SaveUploadCommand;
@@ -11,18 +13,31 @@ import pl.fula.bookstore.bookstore.uploads.domain.Upload;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 class CatalogService implements CatalogUseCase {
     private final BookJpaRepository bookRepository;
+    private final AuthorJpaRepository authorRepository;
     private final UploadUseCase upload;
 
     @Override
     public Book addBook(CreateBookCommand command) {
-        Book book = command.toBook();
+        Book book = toBook(command);
         return bookRepository.save(book);
+    }
+
+    private Book toBook(CreateBookCommand command) {
+        Book book = new Book(command.getTitle(), command.getYear(), command.getPrice());
+        Set<Author> authors =  command.getAuthorIds().stream()
+                .map(id -> authorRepository
+                        .findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Unable to find author with id: " + id)))
+                .collect(Collectors.toSet());
+        book.setAuthors(authors);
+        return book;
     }
 
     @Override

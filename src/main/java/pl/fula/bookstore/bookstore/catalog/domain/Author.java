@@ -1,8 +1,10 @@
 package pl.fula.bookstore.bookstore.catalog.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,10 +19,10 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+@ToString(exclude = "books")
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,9 +32,17 @@ public class Author {
 
     private String lastName;
 
+    @JsonIgnoreProperties("authors")
     @ManyToMany(mappedBy = "authors", fetch = FetchType.EAGER)
     private Set<Book> books;
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public Author(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }
+
+

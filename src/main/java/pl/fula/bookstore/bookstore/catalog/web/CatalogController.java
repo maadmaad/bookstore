@@ -38,6 +38,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RequestMapping("/catalog")
 @RestController
@@ -126,9 +127,10 @@ public class CatalogController {
         @NullOrNotBlank(groups = UpdateBookValidationGroup.class)
         private String title;
 
-        @NotBlank(groups = CreateBookValidationGroup.class)
-        @NullOrNotBlank(groups = UpdateBookValidationGroup.class)
-        private String author;
+        // todo efg
+//        @NotBlank(groups = CreateBookValidationGroup.class)
+//        @NullOrNotBlank(groups = UpdateBookValidationGroup.class)
+//        private String author;
 
         @NotNull(groups = CreateBookValidationGroup.class)
         private Integer year;
@@ -138,11 +140,13 @@ public class CatalogController {
         private BigDecimal price;
 
         CreateBookCommand toCreateBookCommand() {
-            return new CreateBookCommand(title, author, year, price);
+            // todo efg
+            return new CreateBookCommand(title, Set.of(), year, price);
         }
 
         UpdateBookCommand toUpdateBookCommand(Long id) {
-            return new UpdateBookCommand(id, title, author, year, price);
+            // todo efg
+            return new UpdateBookCommand(id, title, Set.of(), year, price);
         }
     }
 
