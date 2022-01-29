@@ -53,7 +53,7 @@ public class CatalogController {
 //    }
 
     @GetMapping()
-    public List<Book> getAllFiltered1(@RequestParam Optional<String> title, @RequestParam Optional<String> author) {
+    public List<Book> getAllFiltered(@RequestParam Optional<String> title, @RequestParam Optional<String> author) {
         if (title.isPresent() && author.isPresent()) {
             return catalog.findByTitleAndAuthor(title.get(), author.get());
         } else if (title.isPresent()) {

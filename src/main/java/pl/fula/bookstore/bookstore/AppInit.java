@@ -1,20 +1,17 @@
 package pl.fula.bookstore.bookstore;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.CreateBookCommand;
-import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookCommand;
-import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.fula.bookstore.bookstore.catalog.db.AuthorJpaRepository;
 import pl.fula.bookstore.bookstore.catalog.domain.Author;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
+import pl.fula.bookstore.bookstore.order.application.port.OrderUseCase;
 import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase;
 import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
 import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase.PlaceOrderResponse;
-import pl.fula.bookstore.bookstore.order.application.port.OrderUseCase;
 import pl.fula.bookstore.bookstore.order.domain.Order;
 import pl.fula.bookstore.bookstore.order.domain.OrderItem;
 import pl.fula.bookstore.bookstore.order.domain.Recipient;
@@ -38,8 +35,8 @@ public class AppInit implements CommandLineRunner {
     }
 
     private void placeOrder() {
-        Book book1 = catalogUseCase.findOneByTitle("Effect").orElseThrow(() -> new IllegalStateException("Cannot find a book"));
-        Book book2 = catalogUseCase.findOneByTitle("uzzler").orElseThrow(() -> new IllegalStateException("Cannot find a book"));
+        Book book1 = catalogUseCase.findOneByTitle("efFect").orElseThrow(() -> new IllegalStateException("Cannot find a book"));
+        Book book2 = catalogUseCase.findOneByTitle("uZZler").orElseThrow(() -> new IllegalStateException("Cannot find a book"));
         Recipient recipient = Recipient.builder()
                 .name("Mariusz")
                 .phone("555-444-333")
@@ -51,8 +48,8 @@ public class AppInit implements CommandLineRunner {
 
         PlaceOrderCommand command = PlaceOrderCommand.builder()
                 .recipient(recipient)
-                .item(new OrderItem(1L, 11))
-                .item(new OrderItem(2L, 22))
+                .item(new OrderItem(book1.getId(), 11))
+                .item(new OrderItem(book2.getId(), 22))
                 .build();
 
         PlaceOrderResponse response = placeOrderUseCase.placeOrder(command);

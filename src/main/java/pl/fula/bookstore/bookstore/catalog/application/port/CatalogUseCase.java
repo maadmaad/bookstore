@@ -22,8 +22,6 @@ public interface CatalogUseCase {
 
     List<Book> findByTitleAndAuthor(String title, String author);
 
-    Optional<Book> findOneByTitleAndAuthor(String title, String author);
-
     public List<Book> findByTitle(String title);
 
     public Optional<Book> findOneByTitle(String title);

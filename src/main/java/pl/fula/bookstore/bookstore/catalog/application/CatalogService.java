@@ -58,42 +58,22 @@ class CatalogService implements CatalogUseCase {
 
     @Override
     public List<Book> findByTitleAndAuthor(String title, String author) {
-        return bookRepository.findAll().stream()
-                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
-                // todo efg
-//                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Optional<Book> findOneByTitleAndAuthor(String title, String author) {
-        return bookRepository.findAll().stream()
-                .filter(b -> b.getTitle().contains(title))
-                // todo efg
-//                .filter(b -> b.getAuthor().contains(author))
-                .findFirst();
+        return bookRepository.findByTitleAndAuthor(title, author);
     }
 
     @Override
     public List<Book> findByTitle(String title) {
-        return bookRepository.findAll().stream()
-                .filter(b -> b.getTitle().toLowerCase().contains(title.toLowerCase()))
-                .collect(Collectors.toList());
+        return bookRepository.findByTitleStartsWithIgnoreCase(title);
     }
 
     @Override
     public Optional<Book> findOneByTitle(String title) {
-        return bookRepository.findAll().stream()
-                .filter(b -> b.getTitle().toLowerCase().contains(title.toLowerCase()))
-                .findFirst();
+        return bookRepository.findDistinctFirstByTitleContainsIgnoreCase(title);
     }
 
     @Override
     public List<Book> findByAuthor(String author) {
-        return bookRepository.findAll().stream()
-                // todo efg
-//                .filter(b -> b.getAuthor().toLowerCase().contains(author.toLowerCase()))
-                .collect(Collectors.toList());
+        return bookRepository.findByAuthor(author);
     }
 
     @Override
