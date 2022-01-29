@@ -1,0 +1,3 @@
+GET http://localhost:8080/orders
+
+PUT http://localhost:8080/orders/{{id}}/status
