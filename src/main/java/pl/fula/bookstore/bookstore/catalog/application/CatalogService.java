@@ -31,13 +31,19 @@ class CatalogService implements CatalogUseCase {
 
     private Book toBook(CreateBookCommand command) {
         Book book = new Book(command.getTitle(), command.getYear(), command.getPrice());
-        Set<Author> authors =  command.getAuthorIds().stream()
+        Set<Author> authors = fetchAuthorsByIds(command
+                .getAuthorIds());
+        book.setAuthors(authors);
+        return book;
+    }
+
+    private Set<Author> fetchAuthorsByIds(Set<Long> authorIds) {
+        return authorIds
+                .stream()
                 .map(id -> authorRepository
                         .findById(id)
                         .orElseThrow(() -> new IllegalArgumentException("Unable to find author with id: " + id)))
                 .collect(Collectors.toSet());
-        book.setAuthors(authors);
-        return book;
     }
 
     @Override
@@ -94,7 +100,7 @@ class CatalogService implements CatalogUseCase {
     public UpdateBookResponse updateBook(UpdateBookCommand command) {
         return bookRepository.findById(command.getId())
                 .map(book -> {
-                    Book updatedBook = command.updateFields(book);
+                    Book updatedBook = updateFields(book, command);
                     bookRepository.save(updatedBook);
                     return UpdateBookResponse.SUCCESS;
                 })
@@ -102,6 +108,22 @@ class CatalogService implements CatalogUseCase {
                     String errorMsg = "Book not found with id: " + command.getId();
                     return new UpdateBookResponse(false, List.of(errorMsg));
                 });
+    }
+
+    private Book updateFields(Book book, UpdateBookCommand command) {
+        if (command.getNewTitle() != null) {
+            book.setTitle(command.getNewTitle());
+        }
+        if (command.getNewAuthorIds() != null && !command.getNewAuthorIds().isEmpty()) {
+            book.setAuthors(fetchAuthorsByIds(command.getNewAuthorIds()));
+        }
+        if (command.getNewYear() != null) {
+            book.setYear(command.getNewYear());
+        }
+        if (command.getNewPrice() != null) {
+            book.setPrice(command.getNewPrice());
+        }
+        return book;
     }
 
     @Override

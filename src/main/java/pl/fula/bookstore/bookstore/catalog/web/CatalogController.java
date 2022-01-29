@@ -25,13 +25,13 @@ import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.Updat
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookCoverCommand;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
-import pl.fula.bookstore.bookstore.common.validation.NullOrNotBlank;
-import pl.fula.bookstore.bookstore.common.validation.ValidationGroups.CreateBookValidationGroup;
 import pl.fula.bookstore.bookstore.common.validation.ValidationGroups.UpdateBookValidationGroup;
 import pl.fula.bookstore.bookstore.uploads.application.port.UploadUseCase;
 
+import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -79,7 +79,7 @@ public class CatalogController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addBook_Validated(@Validated({CreateBookValidationGroup.class}) @RequestBody RestBookCommand command) {
+    public ResponseEntity<Void> addBook(@Valid @RequestBody RestBookCommand command) {
         Book book = catalog.addBook(command.toCreateBookCommand());
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
         return ResponseEntity.created(uri).build();                                                                     // TODO 4.6 - return location of created Book in header
@@ -123,63 +123,61 @@ public class CatalogController {
 
     @Data
     private static class RestBookCommand {
-        @NotBlank(groups = CreateBookValidationGroup.class, message = "Please provide a title")
-        @NullOrNotBlank(groups = UpdateBookValidationGroup.class)
+        @NotBlank(message = "Please provide a title")
         private String title;
 
-        // todo efg
-//        @NotBlank(groups = CreateBookValidationGroup.class)
-//        @NullOrNotBlank(groups = UpdateBookValidationGroup.class)
-//        private String author;
+        @NotEmpty
+        private Set<Long> authorIds;
 
-        @NotNull(groups = CreateBookValidationGroup.class)
+        @NotNull
         private Integer year;
 
-        @NotNull(groups = CreateBookValidationGroup.class)
-        @DecimalMin(groups = {CreateBookValidationGroup.class, UpdateBookValidationGroup.class}, value = "0.01")
+        @NotNull
+        @DecimalMin("0.01")
         private BigDecimal price;
 
         CreateBookCommand toCreateBookCommand() {
-            // todo efg
-            return new CreateBookCommand(title, Set.of(), year, price);
+            return new CreateBookCommand(title, authorIds, year, price);
         }
 
         UpdateBookCommand toUpdateBookCommand(Long id) {
-            // todo efg
-            return new UpdateBookCommand(id, title, Set.of(), year, price);
+            return new UpdateBookCommand(id, title, authorIds, year, price);
         }
     }
 
-    // TODO 4.10 - @Valid, @Validated
+
+//    TODO 4.10 - @Valid, @Validated
 //    @PostMapping
 //    @ResponseStatus(HttpStatus.CREATED)
-//    public ResponseEntity<Void> addBook_Valid(@Valid @RequestBody RestBookCommand_Valid command) {
+//    public ResponseEntity<Void> addBook_Validated(@Validated({CreateBookValidationGroup.class}) @RequestBody RestBookCommand command) {
 //        Book book = catalog.addBook(command.toCreateBookCommand());
 //        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
 //        return ResponseEntity.created(uri).build();                                                                     // TODO 4.6 - return location of created Book in header
 //    }
-//
 //    @Data
-//    private static class RestBookCommand_Valid {
-//        @NotBlank(message = "Please provide a title")
+//    private static class RestBookCommand {
+//        @NotBlank(groups = CreateBookValidationGroup.class, message = "Please provide a title")
+//        @NullOrNotBlank(groups = UpdateBookValidationGroup.class)
 //        private String title;
 //
-//        @NotBlank
-//        private String author;
+//        @NotEmpty
+//        private Set<Long> authorIds;
 //
-//        @NotNull
+//        @NotNull(groups = CreateBookValidationGroup.class)
 //        private Integer year;
 //
-//        @NotNull
-//        @DecimalMin("0.01")
+//        @NotNull(groups = CreateBookValidationGroup.class)
+//        @DecimalMin(groups = {CreateBookValidationGroup.class, UpdateBookValidationGroup.class}, value = "0.01")
 //        private BigDecimal price;
 //
 //        CreateBookCommand toCreateBookCommand() {
-//            return new CreateBookCommand(title, author, year, price);
+//            // todo efg
+//            return new CreateBookCommand(title, authorIds, year, price);
 //        }
 //
 //        UpdateBookCommand toUpdateBookCommand(Long id) {
-//            return new UpdateBookCommand(id, title, author, year, price);
+//            // todo efg
+//            return new UpdateBookCommand(id, title, authorIds, year, price);
 //        }
 //    }
 }

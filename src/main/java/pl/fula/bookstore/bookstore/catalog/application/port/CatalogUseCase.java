@@ -55,23 +55,6 @@ public interface CatalogUseCase {
         Set<Long> newAuthorIds;
         Integer newYear;
         BigDecimal newPrice;
-
-        public Book updateFields(Book updatedBook) {
-            if (newTitle != null) {
-                updatedBook.setTitle(newTitle);
-            }
-            // todo efg
-//            if (newAuthor != null) {
-//                updatedBook.setAuthor(newAuthor);
-//            }
-            if (newYear != null) {
-                updatedBook.setYear(newYear);
-            }
-            if (newPrice != null) {
-                updatedBook.setPrice(newPrice);
-            }
-            return updatedBook;
-        }
     }
 
     @Value
