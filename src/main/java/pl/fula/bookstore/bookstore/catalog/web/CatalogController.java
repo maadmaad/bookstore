@@ -36,7 +36,10 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -82,6 +85,28 @@ public class CatalogController {
     public ResponseEntity<Void> addBook(@Valid @RequestBody RestBookCommand command) {
         Book book = catalog.addBook(command.toCreateBookCommand());
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
+
+
+        Map<Book, String> map = new HashMap<>();
+        Set<Book> set = new HashSet<>();
+        map.put(book, "book1");
+        set.add(book);
+
+        String s1 = map.get(book);
+        System.out.println("s1 = " + s1);
+        System.out.println("set.contains(book) = " + set.contains(book));
+
+        book.setTitle("newTitle");
+
+        String s2 = map.get(book);
+        System.out.println("s2 = " + s2);
+        System.out.println("set.contains(book) = " + set.contains(book));
+
+
+
+
+
+
         return ResponseEntity.created(uri).build();                                                                     // TODO 4.6 - return location of created Book in header
     }
 

@@ -1,22 +1,17 @@
 package pl.fula.bookstore.bookstore.order.domain;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import pl.fula.bookstore.bookstore.jpa.BaseEntity;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
-public class OrderItem {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
+public class OrderItem extends BaseEntity {
     private Long bookId;
 
     private int quantity;
