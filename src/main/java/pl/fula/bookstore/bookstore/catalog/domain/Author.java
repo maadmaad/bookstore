@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -33,7 +34,7 @@ public class Author {
 
     @JsonIgnoreProperties("authors")
     @ManyToMany(mappedBy = "authors", fetch = FetchType.EAGER)
-    private Set<Book> books;
+    private Set<Book> books = new HashSet<>();
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -41,6 +42,16 @@ public class Author {
     public Author(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public void addBook(Book book) {
+        this.books.add(book);
+        book.getAuthors().add(this);
+    }
+
+    public void removeBook(Book book) {
+        this.books.remove(book);
+        book.getAuthors().remove(this);
     }
 }
 

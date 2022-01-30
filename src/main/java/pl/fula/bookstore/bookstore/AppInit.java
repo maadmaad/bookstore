@@ -60,8 +60,10 @@ public class AppInit implements CommandLineRunner {
     private void initData() {
         Author joshua = new Author("Joshua", "Bloch");
         Author neal = new Author("Neal", "Gafter");
+        Author gregory = new Author("Gregory", "Greg");
         authorRepository.save(joshua);
         authorRepository.save(neal);
+        authorRepository.save(gregory);
 
         CreateBookCommand effectiveJava = new CreateBookCommand(
                 "Effective Java",
