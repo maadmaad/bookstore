@@ -1,12 +1,19 @@
 package pl.fula.bookstore.bookstore.jpa;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.util.Objects;
+import javax.persistence.Version;
 import java.util.UUID;
 
+@Getter
+@Setter
+@EqualsAndHashCode(of = "uuid")
 @MappedSuperclass
 public abstract class BaseEntity {
     @Id
@@ -15,24 +22,6 @@ public abstract class BaseEntity {
 
     private String uuid = UUID.randomUUID().toString();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BaseEntity)) return false;
-        BaseEntity that = (BaseEntity) o;
-        return Objects.equals(uuid, that.uuid);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(uuid);
-    }
+    @Version
+    private long version;
 }
