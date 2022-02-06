@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import pl.fula.bookstore.bookstore.jpa.BaseEntity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -27,13 +28,13 @@ public class Book extends BaseEntity {
     private BigDecimal price;
     private Long coverId;
 
-    @JsonIgnoreProperties("books")
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "author_book",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
+    @JsonIgnoreProperties("books")
     private Set<Author> authors = new HashSet<>();
 
     public Book(String title, Integer year, BigDecimal price) {

@@ -24,6 +24,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,7 +46,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "order_id")
     private List<OrderItem> items;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Recipient recipient;
 
     private LocalDateTime createdAt_1;
@@ -56,8 +57,13 @@ public class Order extends BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @PreUpdate
+    private void updatedAt() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     @PrePersist
-    void createdAt_1() {
+    private void createdAt_1() {
         this.createdAt_1 = LocalDateTime.now();
     }
 }
