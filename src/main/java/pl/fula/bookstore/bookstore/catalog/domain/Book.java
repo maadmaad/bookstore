@@ -28,7 +28,7 @@ public class Book extends BaseEntity {
     private BigDecimal price;
     private Long coverId;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "author_book",
             joinColumns = @JoinColumn(name = "book_id"),
@@ -56,6 +56,5 @@ public class Book extends BaseEntity {
     public void removeAuthors() {
         authors.forEach(a -> a.getBooks().remove(this));
         authors.clear();
-//        this.authors.forEach(this::removeAuthor);
     }
 }

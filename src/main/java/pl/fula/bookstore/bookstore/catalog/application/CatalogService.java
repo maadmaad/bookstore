@@ -2,6 +2,7 @@ package pl.fula.bookstore.bookstore.catalog.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.catalog.db.AuthorJpaRepository;
 import pl.fula.bookstore.bookstore.catalog.db.BookJpaRepository;
@@ -24,9 +25,11 @@ class CatalogService implements CatalogUseCase {
     private final UploadUseCase upload;
 
     @Override
+    @Transactional
     public Book addBook(CreateBookCommand command) {
         Book book = toBook(command);
-        return bookRepository.save(book);
+//        return bookRepository.save(book);
+        return book;
     }
 
     private Book toBook(CreateBookCommand command) {
@@ -94,6 +97,21 @@ class CatalogService implements CatalogUseCase {
                     return new UpdateBookResponse(false, List.of(errorMsg));
                 });
     }
+
+//    @Override
+//    @Transactional
+//    public UpdateBookResponse updateBook(UpdateBookCommand command) {
+//        return bookRepository.findById(command.getId())
+//                .map(book -> {
+//                    Book updatedBook = updateFields(book, command);
+////                    bookRepository.save(updatedBook);
+//                    return UpdateBookResponse.SUCCESS;
+//                })
+//                .orElseGet(() -> {
+//                    String errorMsg = "Book not found with id: " + command.getId();
+//                    return new UpdateBookResponse(false, List.of(errorMsg));
+//                });
+//    }
 
     private Book updateFields(Book book, UpdateBookCommand command) {
         if (command.getNewTitle() != null) {

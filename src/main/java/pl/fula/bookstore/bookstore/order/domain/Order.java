@@ -42,11 +42,11 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private  OrderStatus status = OrderStatus.NEW;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private List<OrderItem> items;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private Recipient recipient;
 
     private LocalDateTime createdAt_1;
