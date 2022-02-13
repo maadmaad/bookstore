@@ -25,8 +25,9 @@ import java.util.Set;
 public class Book extends BaseEntity {
     private String title;
     private Integer year;
-    private BigDecimal price;
     private Long coverId;
+    private BigDecimal price;
+    private Long available;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -37,10 +38,11 @@ public class Book extends BaseEntity {
     @JsonIgnoreProperties("books")
     private Set<Author> authors = new HashSet<>();
 
-    public Book(String title, Integer year, BigDecimal price) {
+    public Book(String title, Integer year, BigDecimal price, Long available) {
         this.title = title;
         this.year = year;
         this.price = price;
+        this.available = available;
     }
 
     public void addAuthor(Author author) {

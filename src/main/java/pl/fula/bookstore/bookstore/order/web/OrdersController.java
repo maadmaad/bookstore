@@ -2,7 +2,6 @@ package pl.fula.bookstore.bookstore.order.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,22 +19,15 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase;
 import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
-import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase.UpdateStatusCommand;
 import pl.fula.bookstore.bookstore.order.application.port.OrderUseCase;
 import pl.fula.bookstore.bookstore.order.domain.Order;
-import pl.fula.bookstore.bookstore.order.domain.OrderItem;
 import pl.fula.bookstore.bookstore.order.domain.OrderStatus;
-import pl.fula.bookstore.bookstore.order.domain.Recipient;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orders")
@@ -67,8 +58,8 @@ public class OrdersController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> newOrder(@Valid @RequestBody PlaceOrderRestCommand command) {
-        manipulateOrderUseCase.placeOrder(command.toPlaceOrderCommand());
+    public ResponseEntity<Void> newOrder(@Valid @RequestBody PlaceOrderCommand command) {
+        manipulateOrderUseCase.placeOrder(command);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
         return ResponseEntity.created(uri).build();
     }
@@ -103,57 +94,10 @@ public class OrdersController {
     }
 
     @Data
-    private static class PlaceOrderRestCommand {
-        @Valid
-        @NotNull
-        RecipientCommand recipientCommand;
-
-        @Valid
-        @NotEmpty
-        List<OrderItemCommand> orderItems;
-
-        PlaceOrderCommand toPlaceOrderCommand() {
-            return PlaceOrderCommand.builder()
-                    .recipient(recipientCommand.toRecipient())
-                    .items(orderItems.stream().map(OrderItemCommand::toOrderItem).collect(Collectors.toList()))
-                    .build();
-        }
-    }
-
-    @Data
     private static class UpdateStatusRestCommand {
         @NotBlank
         String status;
     }
 
-    @Value
-    private static class RecipientCommand {
-        @NotBlank
-        String name;
 
-        String phone;
-        String street;
-        String city;
-        String zipCode;
-        String email;
-
-        Recipient toRecipient() {
-            return new Recipient(name, phone, street, city, zipCode, email);
-        }
-    }
-
-    @Value
-    private static class OrderItemCommand {
-        @NotNull
-        @Positive
-        Long bookId;
-
-        @NotNull
-        @Positive
-        int quantity;
-
-        public OrderItem toOrderItem() {
-            return new OrderItem(bookId, quantity);
-        }
-    }
 }

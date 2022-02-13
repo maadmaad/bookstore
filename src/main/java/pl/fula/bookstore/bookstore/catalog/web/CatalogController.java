@@ -33,6 +33,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -137,8 +138,12 @@ public class CatalogController {
         @DecimalMin("0.01")
         private BigDecimal price;
 
+        @NotNull
+        @PositiveOrZero
+        private Long available;
+
         CreateBookCommand toCreateBookCommand() {
-            return new CreateBookCommand(title, authorIds, year, price);
+            return new CreateBookCommand(title, authorIds, year, price, available);
         }
 
         UpdateBookCommand toUpdateBookCommand(Long id) {

@@ -3,13 +3,15 @@ package pl.fula.bookstore.bookstore.order.application.port;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
-import pl.fula.bookstore.bookstore.order.domain.OrderItem;
 import pl.fula.bookstore.bookstore.order.domain.OrderStatus;
 import pl.fula.bookstore.bookstore.order.domain.Recipient;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public interface ManipulateOrderUseCase {
 
@@ -22,8 +24,19 @@ public interface ManipulateOrderUseCase {
     @Builder
     class PlaceOrderCommand {
         @Singular
-        List<OrderItem> items;
+        Set<OrderItemCommand> orderItems;
         Recipient recipient;
+    }
+
+    @Value
+    class OrderItemCommand {
+        @NotNull
+        @Positive
+        Long bookId;
+
+        @NotNull
+        @Positive
+        int quantity;
     }
 
     @Value
