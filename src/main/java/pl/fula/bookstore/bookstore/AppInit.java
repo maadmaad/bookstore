@@ -48,8 +48,8 @@ public class AppInit implements CommandLineRunner {
 
         PlaceOrderCommand command = PlaceOrderCommand.builder()
                 .recipient(recipient)
-                .orderItem(new OrderItemCommand(book1.getId(), 11))
-                .orderItem(new OrderItemCommand(book2.getId(), 22))
+                .orderItem(new OrderItemCommand(book1.getId(), 1))
+                .orderItem(new OrderItemCommand(book2.getId(), 1))
                 .build();
 
         PlaceOrderResponse response = placeOrderUseCase.placeOrder(command);

@@ -7,9 +7,11 @@ import pl.fula.bookstore.bookstore.catalog.db.BookJpaRepository;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase;
 import pl.fula.bookstore.bookstore.order.db.OrderJpaRepository;
+import pl.fula.bookstore.bookstore.order.db.RecipientJpaRepository;
 import pl.fula.bookstore.bookstore.order.domain.Order;
 import pl.fula.bookstore.bookstore.order.domain.OrderItem;
 import pl.fula.bookstore.bookstore.order.domain.OrderStatus;
+import pl.fula.bookstore.bookstore.order.domain.Recipient;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 class ManipulateOrderService implements ManipulateOrderUseCase {
     private final OrderJpaRepository orderRepository;
     private final BookJpaRepository bookRepository;
+    private final RecipientJpaRepository recipientRepository;
 
 //    @Override
 //    public ManipulateOrderResponse updateOrderStatus(UpdateStatusCommand command) {
@@ -43,13 +46,19 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
                 .collect(Collectors.toSet());
 
         Order order = Order.builder()
-                .recipient(command.getRecipient())
+                .recipient(getOrCreateRecipient(command.getRecipient()))
                 .items(items)
                 .build();
         orderRepository.save(order);
         bookRepository.saveAll(updateBooks(items));
 
         return PlaceOrderResponse.success(order.getId());
+    }
+
+    private Recipient getOrCreateRecipient(Recipient recipient) {
+        return recipientRepository
+                .findByEmailIgnoreCase(recipient.getEmail())
+                .orElse(recipient);
     }
 
     private Set<Book> updateBooks(Set<OrderItem> items) {

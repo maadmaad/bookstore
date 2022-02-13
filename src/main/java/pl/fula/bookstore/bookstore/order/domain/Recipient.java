@@ -14,12 +14,12 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @Entity
 public class Recipient extends BaseEntity {
+    private String email;
     private String name;
     private String phone;
     private String street;
     private String city;
     private String zipCode;
-    private String email;
 
     public Recipient(String name, String phone, String street, String city, String zipCode, String email) {
         this.name = name;
