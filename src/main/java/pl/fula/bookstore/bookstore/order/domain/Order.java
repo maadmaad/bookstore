@@ -2,7 +2,6 @@ package pl.fula.bookstore.bookstore.order.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,9 +16,6 @@ import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -65,5 +61,9 @@ public class Order extends BaseEntity {
     @PrePersist
     private void createdAt_1() {
         this.createdAt_1 = LocalDateTime.now();
+    }
+
+    public void updateStatus(OrderStatus newStatus) {
+        this.status = this.status.updateStatus(newStatus);
     }
 }

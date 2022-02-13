@@ -1,14 +1,34 @@
 package pl.fula.bookstore.bookstore.order.domain;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Arrays;
+import java.util.Optional;
 
 public enum OrderStatus {
-    NEW("NEW"),
-    CONFIRMED("CONFIRMED"),
-    IN_DELIVERY("IN_DELIVERY"),
-    DELIVERED("DELIVERED"),
+    NEW("NEW") {
+        @Override
+        public OrderStatus updateStatus(OrderStatus status) {
+            return switch (status) {
+                case PAID -> PAID;
+                case CANCELED -> CANCELED;
+                case ABANDONED -> ABANDONED;
+                default -> super.updateStatus(status);
+            };
+        }
+    },
+    PAID("PAID") {
+        @Override
+        public OrderStatus updateStatus(OrderStatus status) {
+            return switch (status) {
+                case SHIPPED -> SHIPPED;
+                default -> super.updateStatus(status);
+            };
+        }
+    },
     CANCELED("CANCELED"),
-    RETURNED("RETURNED");
+    ABANDONED("ABANDONED"),
+    SHIPPED("SHIPPED");
 
     String value;
 
@@ -24,5 +44,15 @@ public enum OrderStatus {
         return Arrays.stream(OrderStatus.values())
                 .map(OrderStatus::getValue)
                 .anyMatch(s -> s.equals(statusToCheck.toUpperCase()));
+    }
+
+    public static Optional<OrderStatus> parseString(String strValue) {
+        return Arrays.stream(values())
+                .filter(it -> StringUtils.equalsIgnoreCase(it.name(), strValue))
+                .findFirst();
+    }
+
+    public OrderStatus updateStatus(OrderStatus status) {
+        throw new IllegalArgumentException("Unable to mark " + this.name() + " order as " + status.name());
     }
 }

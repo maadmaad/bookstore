@@ -20,11 +20,9 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.fula.bookstore.bookstore.catalog.application.port.CatalogUseCase;
 import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase;
-import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase.ManipulateOrderResponse;
-import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase.UpdateOrderStatusCommand;
+import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
+import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase.UpdateStatusCommand;
 import pl.fula.bookstore.bookstore.order.application.port.OrderUseCase;
-import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase;
-import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
 import pl.fula.bookstore.bookstore.order.domain.Order;
 import pl.fula.bookstore.bookstore.order.domain.OrderItem;
 import pl.fula.bookstore.bookstore.order.domain.OrderStatus;
@@ -37,6 +35,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,7 +46,6 @@ import java.util.stream.Collectors;
                                                                                                                         //            updateOrder(@PathVariable @Positive Long id)
                                                                                                                         //        will not be validated
 public class OrdersController {
-    private final PlaceOrderUseCase placeOrderUseCase;
     private final ManipulateOrderUseCase manipulateOrderUseCase;
     private final OrderUseCase orderUseCase;
     private final CatalogUseCase catalog;
@@ -70,21 +68,32 @@ public class OrdersController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> newOrder(@Valid @RequestBody PlaceOrderRestCommand command) {
-        placeOrderUseCase.placeOrder(command.toPlaceOrderCommand());
+        manipulateOrderUseCase.placeOrder(command.toPlaceOrderCommand());
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
         return ResponseEntity.created(uri).build();
     }
 
+//    @PutMapping("/{id}")
+//    @ResponseStatus(HttpStatus.ACCEPTED)
+//    public void updateOrderStatus(@PathVariable @Positive Long id, @RequestParam(value = "status") OrderStatus status) {
+//        UpdateStatusCommand orderStatusCommand = new UpdateStatusCommand(id, status);
+//        ManipulateOrderResponse response = manipulateOrderUseCase.changeOrderStatus(orderStatusCommand);
+//
+//        if (!response.isSuccess()) {
+//            String message = String.join(", ", response.getErrors());
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+//        }
+//    }
+
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateOrder(@PathVariable @Positive Long id, @RequestParam(value = "status") OrderStatus status) {
-        UpdateOrderStatusCommand orderStatusCommand = new UpdateOrderStatusCommand(id, status);
-        ManipulateOrderResponse response = manipulateOrderUseCase.changeOrderStatus(orderStatusCommand);
+    public void updateOrderStatus(@PathVariable @Positive Long id, @Valid @RequestBody UpdateStatusRestCommand command) {
+        OrderStatus orderStatus = OrderStatus
+                .parseString(command.getStatus())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Unknown status " + command.getStatus()));
 
-        if (!response.isSuccess()) {
-            String message = String.join(", ", response.getErrors());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
-        }
+        manipulateOrderUseCase.updateOrderStatus(id, orderStatus);
     }
 
     @DeleteMapping("/{id}")
@@ -109,6 +118,12 @@ public class OrdersController {
                     .items(orderItems.stream().map(OrderItemCommand::toOrderItem).collect(Collectors.toList()))
                     .build();
         }
+    }
+
+    @Data
+    private static class UpdateStatusRestCommand {
+        @NotBlank
+        String status;
     }
 
     @Value

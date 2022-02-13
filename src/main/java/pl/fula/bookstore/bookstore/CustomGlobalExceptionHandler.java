@@ -1,15 +1,13 @@
 package pl.fula.bookstore.bookstore;
 
-import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import pl.fula.bookstore.bookstore.common.validation.BookstoreValidationException;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +23,6 @@ public class CustomGlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-
         // Get all errors
         List<String> errors = ex
                 .getBindingResult()
@@ -36,16 +32,19 @@ public class CustomGlobalExceptionHandler {
                 .sorted()
                 .collect(Collectors.toList());
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", new Date());
-        body.put("status", status.value());
-        body.put("errors", errors);
-
-        return new ResponseEntity<>(body, status);
+        return handleerror(HttpStatus.BAD_REQUEST, errors);
     }
 
-//    @ExceptionHandler({Exception.class})
-//    public ResponseEntity<String> handleOtherExceptions(Exception ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return handleerror(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
+    }
+
+    private ResponseEntity<Object> handleerror(HttpStatus status, List<String> errors) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", status.value());
+        body.put("errors", errors);
+        return new ResponseEntity<>(body, status);
+    }
 }

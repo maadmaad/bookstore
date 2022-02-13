@@ -9,9 +9,9 @@ import pl.fula.bookstore.bookstore.catalog.db.AuthorJpaRepository;
 import pl.fula.bookstore.bookstore.catalog.domain.Author;
 import pl.fula.bookstore.bookstore.catalog.domain.Book;
 import pl.fula.bookstore.bookstore.order.application.port.OrderUseCase;
-import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase;
-import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
-import pl.fula.bookstore.bookstore.order.application.port.PlaceOrderUseCase.PlaceOrderResponse;
+import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase;
+import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
+import pl.fula.bookstore.bookstore.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
 import pl.fula.bookstore.bookstore.order.domain.Order;
 import pl.fula.bookstore.bookstore.order.domain.OrderItem;
 import pl.fula.bookstore.bookstore.order.domain.Recipient;
@@ -24,7 +24,7 @@ import java.util.Set;
 @Component
 public class AppInit implements CommandLineRunner {
     private final CatalogUseCase catalogUseCase;
-    private final PlaceOrderUseCase placeOrderUseCase;
+    private final ManipulateOrderUseCase placeOrderUseCase;
     private final OrderUseCase orderUseCase;
     private final AuthorJpaRepository authorRepository;
 

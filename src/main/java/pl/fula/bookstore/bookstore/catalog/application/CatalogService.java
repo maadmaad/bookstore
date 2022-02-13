@@ -28,14 +28,13 @@ class CatalogService implements CatalogUseCase {
     @Transactional
     public Book addBook(CreateBookCommand command) {
         Book book = toBook(command);
-//        return bookRepository.save(book);
-        return book;
+        return bookRepository.save(book);
+//        return book;
     }
 
     private Book toBook(CreateBookCommand command) {
         Book book = new Book(command.getTitle(), command.getYear(), command.getPrice());
-        Set<Author> authors = fetchAuthorsByIds(command
-                .getAuthorIds());
+        Set<Author> authors = fetchAuthorsByIds(command.getAuthorIds());
         updateBook(book, authors);
         return book;
     }
@@ -61,7 +60,8 @@ class CatalogService implements CatalogUseCase {
 
     @Override
     public List<Book> findAll() {
-        return bookRepository.findAll();
+//        return bookRepository.findAll();
+        return bookRepository.findAllEager();
     }
 
     @Override
