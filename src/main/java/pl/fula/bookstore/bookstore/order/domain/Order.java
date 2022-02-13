@@ -20,7 +20,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -45,23 +44,23 @@ public class Order extends BaseEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private Recipient recipient;
 
-    private LocalDateTime createdAt_1;
+//    private LocalDateTime createdAt_2;
 
     @CreatedDate
-    private LocalDateTime createdAt_2;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @PreUpdate
-    private void updatedAt() {
-        this.updatedAt = LocalDateTime.now();
-    }
+//    @PreUpdate
+//    private void updatedAt() {
+//        this.updatedAt = LocalDateTime.now();
+//    }
 
-    @PrePersist
-    private void createdAt_1() {
-        this.createdAt_1 = LocalDateTime.now();
-    }
+//    @PrePersist
+//    private void createdAt_2() {
+//        this.createdAt_2 = LocalDateTime.now();
+//    }
 
     public UpdateStatusResult updateStatus(OrderStatus newStatus) {
         UpdateStatusResult result = this.status.updateStatus(newStatus);
