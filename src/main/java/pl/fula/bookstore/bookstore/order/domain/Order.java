@@ -63,7 +63,9 @@ public class Order extends BaseEntity {
         this.createdAt_1 = LocalDateTime.now();
     }
 
-    public void updateStatus(OrderStatus newStatus) {
-        this.status = this.status.updateStatus(newStatus);
+    public UpdateStatusResult updateStatus(OrderStatus newStatus) {
+        UpdateStatusResult result = this.status.updateStatus(newStatus);
+        this.status = result.getNewStatus();
+        return result;
     }
 }

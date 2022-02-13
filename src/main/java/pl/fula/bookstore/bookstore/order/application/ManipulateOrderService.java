@@ -12,6 +12,7 @@ import pl.fula.bookstore.bookstore.order.domain.Order;
 import pl.fula.bookstore.bookstore.order.domain.OrderItem;
 import pl.fula.bookstore.bookstore.order.domain.OrderStatus;
 import pl.fula.bookstore.bookstore.order.domain.Recipient;
+import pl.fula.bookstore.bookstore.order.domain.UpdateStatusResult;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,7 +51,7 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
                 .items(items)
                 .build();
         orderRepository.save(order);
-        bookRepository.saveAll(updateBooks(items));
+        bookRepository.saveAll(reduceBooks(items));
 
         return PlaceOrderResponse.success(order.getId());
     }
@@ -61,10 +62,18 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
                 .orElse(recipient);
     }
 
-    private Set<Book> updateBooks(Set<OrderItem> items) {
+    private Set<Book> reduceBooks(Set<OrderItem> items) {
         return items.stream().map(item -> {
             Book book = item.getBook();
             book.setAvailable(book.getAvailable() - item.getQuantity());
+            return book;
+        }).collect(Collectors.toSet());
+    }
+
+    private Set<Book> revokeBooks(Set<OrderItem> items) {
+        return items.stream().map(item -> {
+            Book book = item.getBook();
+            book.setAvailable(book.getAvailable() + item.getQuantity());
             return book;
         }).collect(Collectors.toSet());
     }
@@ -92,7 +101,10 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
     public void updateOrderStatus(Long id, OrderStatus status) {
         orderRepository.findById(id).
                 ifPresent(order -> {
-                    order.updateStatus(status);
+                    UpdateStatusResult result = order.updateStatus(status);
+                    if (result.isRevoked()) {
+                        bookRepository.saveAll(revokeBooks(order.getItems()));
+                    }
                     orderRepository.save(order);
                 });
     }

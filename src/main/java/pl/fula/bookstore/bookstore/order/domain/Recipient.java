@@ -31,8 +31,3 @@ public class Recipient extends BaseEntity {
     }
 }
 
-class Address {
-    String street;
-    String city;
-    String zipCode;
-}
